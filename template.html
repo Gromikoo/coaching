@@ -21,7 +21,8 @@
   --gutter:18px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:clip}
+body{overflow-x:clip}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.18;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -41,7 +42,7 @@ a{color:inherit}
 .small-note{text-align:center;font-size:14px;color:var(--ink-soft);margin-top:14px}
 
 /* ---------- hero ---------- */
-.hero{padding:28px 0 36px;text-align:center;position:relative}
+.hero{padding-top:28px;padding-bottom:36px;text-align:center;position:relative}
 .kicker{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   border:1.5px solid var(--ink);padding:7px 12px;border-radius:999px;margin-bottom:22px}
 .hero h1{font-family:var(--display);font-style:italic;font-weight:700;font-size:clamp(64px,19vw,156px);
@@ -49,10 +50,10 @@ a{color:inherit}
 .hero h1 .q{color:var(--clay)}
 .hero .sub{font-size:19px;max-width:30ch;margin:18px auto 26px;color:var(--ink-soft)}
 .hero .sub b{color:var(--ink)}
-.counts{display:flex;justify-content:center;gap:10px;margin:0 auto 26px;flex-wrap:wrap}
-.count{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:10px 14px;min-width:96px}
+.counts{display:flex;justify-content:center;gap:8px;margin:0 auto 26px;max-width:420px}
+.count{flex:1;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:10px 6px}
 .count b{display:block;font-family:var(--stamp);font-size:30px;line-height:1;letter-spacing:.01em}
-.count span{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+.count span{display:block;font-size:11px;line-height:1.25;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
 
 /* ---------- ticker ---------- */
 .ticker{background:var(--ink);color:var(--paper);overflow:hidden;white-space:nowrap;padding:13px 0;
@@ -178,7 +179,7 @@ footer{background:var(--ink);color:#a8998c;font-size:13px;text-align:center;padd
 </section>
 <footer>Messages and photos shown as they were sent. Results are different for every person.</footer>
 
-<div class="sticky" id="sticky"><a class="btn light" href="#book">Book my strategy call <span class="arrow">→</span></a></div>
+<div class="sticky hide" id="sticky"><a class="btn light" href="#book">Book my strategy call <span class="arrow">→</span></a></div>
 
 <script>
 const DATA = __DATA__;
@@ -219,9 +220,15 @@ const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting
 document.querySelectorAll('.rise').forEach(el => io.observe(el));
 
 // hide sticky button when the calendar is on screen
+// hide sticky button while the hero button or the calendar is on screen
 const sticky = document.getElementById('sticky');
-new IntersectionObserver(es => es.forEach(e => sticky.classList.toggle('hide', e.isIntersecting)), {threshold: 0.05})
-  .observe(document.getElementById('book'));
+const seen = new Set();
+const io2 = new IntersectionObserver(es => {
+  es.forEach(e => e.isIntersecting ? seen.add(e.target) : seen.delete(e.target));
+  sticky.classList.toggle('hide', seen.size > 0);
+}, {threshold: 0});
+io2.observe(document.querySelector('.hero .btn'));
+io2.observe(document.getElementById('book'));
 </script>
 <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 </body>
