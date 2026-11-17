@@ -55,17 +55,17 @@ def save(im):
 
 # 1) before & after photos (black slides, like the top of the website)
 for p in data["photos"]:
-    im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
-    header(d, WHITE)
+    im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
+    header(d, BLACK)
     photo = fit(Image.open(ROOT / p["img"]).convert("RGB"), 940, 900)
     x, y = (W - photo.width) // 2, 360
     rounded_paste(im, photo, x, y, 20)
-    pill(d, W // 2, y + photo.height, label(p["tag"]), heavy(64), WHITE, BLACK)
+    pill(d, W // 2, y + photo.height, label(p["tag"]), heavy(64), BLACK, WHITE)
     f = demi(50); lines = wrap("“" + p["quote"] + "”", f, 920)
     ty = y + photo.height + 90
     for ln in lines:
-        d.text((W // 2, ty), ln, font=f, fill=WHITE, anchor="ma"); ty += 66
-    button(d, WHITE, BLACK); save(im)
+        d.text((W // 2, ty), ln, font=f, fill=BLACK, anchor="ma"); ty += 66
+    button(d, BLACK, WHITE); save(im)
 
 # 2) every message (white slides, like the review cards)
 for m in data["messages"]:
@@ -90,18 +90,18 @@ for m in data["messages"]:
     button(d, BLACK, WHITE); save(im)
 
 # 3) last slide: the ask
-im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
+im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
 for i, ln in enumerate(["WANT TO BE", "THE NEXT ONE?"]):
-    d.text((W // 2, 680 + i * 130), ln, font=heavy(116), fill=WHITE, anchor="mm")
-d.text((W // 2, 930), "15 minute call. By phone.", font=demi(48), fill="#bdbdbd", anchor="mm")
+    d.text((W // 2, 680 + i * 130), ln, font=heavy(116), fill=BLACK, anchor="mm")
+d.text((W // 2, 930), "15 minute call. By phone.", font=demi(48), fill="#6b6b6b", anchor="mm")
 bw, bh, y = 900, 130, 1060
-d.rounded_rectangle([(W - bw) // 2, y, (W + bw) // 2, y + bh], 16, fill=WHITE)
-d.text((W // 2, y + bh // 2), "TAP THE LINK IN MY BIO", font=heavy(46), fill=BLACK, anchor="mm")
+d.rounded_rectangle([(W - bw) // 2, y, (W + bw) // 2, y + bh], 16, fill=BLACK)
+d.text((W // 2, y + bh // 2), "TAP THE LINK IN MY BIO", font=heavy(46), fill=WHITE, anchor="mm")
 save(im)
 
 # 4) highlight cover (IG shows only the middle circle)
-im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
-d.ellipse([W // 2 - 330, H // 2 - 330, W // 2 + 330, H // 2 + 330], fill=WHITE)
+im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
+d.ellipse([W // 2 - 330, H // 2 - 330, W // 2 + 330, H // 2 + 330], fill=WHITE, outline=BLACK, width=10)
 d.text((W // 2, H // 2), "RESULTS", font=heavy(120), fill=BLACK, anchor="mm")
 im.save(OUT / "00-cover.png", optimize=True)
 print("made", n, "slides + cover in", OUT)
