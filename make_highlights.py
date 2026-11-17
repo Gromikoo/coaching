@@ -106,7 +106,9 @@ save(im)
 # 4) highlight cover (IG shows only the middle circle)
 im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
 d.ellipse([W // 2 - 330, H // 2 - 330, W // 2 + 330, H // 2 + 330], fill=WHITE)
-d.text((W // 2, H // 2 - 70), "IS HE", font=heavy(150), fill=BLACK, anchor="mm")
-d.text((W // 2, H // 2 + 85), "GOOD?", font=heavy(150), fill=BLACK, anchor="mm")
+f = heavy(54); lines = wrap(HEADLINE.upper(), f, 540)
+y = H // 2 - (len(lines) * 70) // 2 + 35
+for ln in lines:
+    d.text((W // 2, y), ln, font=f, fill=BLACK, anchor="mm"); y += 70
 im.save(OUT / "00-cover.png", optimize=True)
 print("made", n, "slides + cover in", OUT)
