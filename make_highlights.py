@@ -39,7 +39,7 @@ def pill(d, cx, cy, text, f, bg, fg, padx=34, h=None):
     d.text((cx, cy), text, font=f, fill=fg, anchor="mm")
 
 def header(d, color):
-    d.text((W // 2, 250), "IS HE GOOD?", font=heavy(100), fill=color, anchor="mm")
+    d.text((W // 2, 250), "RESULTS", font=heavy(110), fill=color, anchor="mm")
 
 def button(d, bg, fg, text="SEE IF YOU'RE A FIT · LINK IN BIO"):
     bw, bh, y = 900, 124, 1600
@@ -102,7 +102,6 @@ save(im)
 # 4) highlight cover (IG shows only the middle circle)
 im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
 d.ellipse([W // 2 - 330, H // 2 - 330, W // 2 + 330, H // 2 + 330], fill=WHITE)
-d.text((W // 2, H // 2 - 70), "IS HE", font=heavy(150), fill=BLACK, anchor="mm")
-d.text((W // 2, H // 2 + 85), "GOOD?", font=heavy(150), fill=BLACK, anchor="mm")
+d.text((W // 2, H // 2), "RESULTS", font=heavy(120), fill=BLACK, anchor="mm")
 im.save(OUT / "00-cover.png", optimize=True)
 print("made", n, "slides + cover in", OUT)
