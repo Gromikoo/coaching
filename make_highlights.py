@@ -65,7 +65,7 @@ for p in data["photos"]:
     ty = y + photo.height + 90
     for ln in lines:
         d.text((W // 2, ty), ln, font=f, fill=BLACK, anchor="ma"); ty += 66
-    button(d, BLACK, WHITE); save(im)
+    save(im)
 
 # 2) every message (white slides, like the review cards)
 for m in data["messages"]:
@@ -87,17 +87,9 @@ for m in data["messages"]:
     cx, cy = (W - cw) // 2, top + (bottom - top - ch) // 2
     d.rounded_rectangle([cx, cy, cx + cw, cy + ch], 24, fill=WHITE, outline=LINE, width=3)
     rounded_paste(im, shot, cx + pad, cy + pad, 12)
-    button(d, BLACK, WHITE); save(im)
+    save(im)
 
-# 3) last slide: the ask
-im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
-for i, ln in enumerate(["WANT TO BE", "THE NEXT ONE?"]):
-    d.text((W // 2, 680 + i * 130), ln, font=heavy(116), fill=BLACK, anchor="mm")
-d.text((W // 2, 930), "15 minute call. By phone.", font=demi(48), fill="#6b6b6b", anchor="mm")
-bw, bh, y = 900, 130, 1060
-d.rounded_rectangle([(W - bw) // 2, y, (W + bw) // 2, y + bh], 16, fill=BLACK)
-d.text((W // 2, y + bh // 2), "TAP THE LINK IN MY BIO", font=heavy(46), fill=WHITE, anchor="mm")
-save(im)
+# 3) no call-to-action slide: these are results only (Miko, 2026-11-16)
 
 # 4) highlight cover (IG shows only the middle circle)
 im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
