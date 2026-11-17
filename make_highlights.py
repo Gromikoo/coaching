@@ -53,40 +53,43 @@ def save(im):
     global n; n += 1
     im.save(OUT / f"{n:02d}.png", optimize=True)
 
-# 1) before & after photos (black slides, like the top of the website)
+# 1) before & after photos -- no title (the highlight cover says TESTIMONIALS), centered top to bottom
 for p in data["photos"]:
     im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
-    header(d, BLACK)
-    photo = fit(Image.open(ROOT / p["img"]).convert("RGB"), 940, 900)
-    x, y = (W - photo.width) // 2, 360
+    photo = fit(Image.open(ROOT / p["img"]).convert("RGB"), 960, 1000)
+    f = demi(50); lines = wrap("\u201c" + p["quote"] + "\u201d", f, 920)
+    total = photo.height + 90 + len(lines) * 66
+    x, y = (W - photo.width) // 2, (H - total) // 2
     rounded_paste(im, photo, x, y, 20)
     pill(d, W // 2, y + photo.height, label(p["tag"]), heavy(64), BLACK, WHITE)
-    f = demi(50); lines = wrap("“" + p["quote"] + "”", f, 920)
     ty = y + photo.height + 90
     for ln in lines:
         d.text((W // 2, ty), ln, font=f, fill=BLACK, anchor="ma"); ty += 66
     save(im)
 
-# 2) every message (white slides, like the review cards)
+# 2) every message: result label, their words, name, real screenshot -- centered top to bottom
 for m in data["messages"]:
     im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
-    header(d, BLACK)
-    pill(d, W // 2, 420, label(m["tag"]), heavy(84), BLACK, WHITE, h=140)
     text = EMOJI.sub("", m["text"]).strip()
     for size in (64, 58, 52, 46, 42, 38):
-        f = demi(size); lines = wrap("“" + text + "”", f, 930)
-        if len(lines) * size * 1.3 <= 560: break
-    lh = int(size * 1.3); y = 560
+        f = demi(size); lines = wrap("\u201c" + text + "\u201d", f, 930)
+        if len(lines) * size * 1.3 <= 600: break
+    lh = int(size * 1.3)
+    shot = Image.open(ROOT / "img/msg" / (m["img"] + ".jpg")).convert("RGB")
+    shot = fit(shot, 860, 1600 - len(lines) * lh - 360)   # keep the whole block inside the safe zone
+    pad = 22; cw, ch = shot.width + pad * 2, shot.height + pad * 2
+    PILL, GAP1, NAME, GAP2 = 140, 60, 56, 50
+    total = PILL + GAP1 + len(lines) * lh + NAME + GAP2 + ch
+    y = (H - total) // 2
+    pill(d, W // 2, y + PILL // 2, label(m["tag"]), heavy(84), BLACK, WHITE, h=PILL)
+    y += PILL + GAP1
     for ln in lines:
         d.text((W // 2, y), ln, font=f, fill=BLACK, anchor="ma"); y += lh
-    d.text((W // 2, y + 18), m["name"] or "Direct message", font=medium(36), fill=GREY, anchor="ma"); y += 80
-    # the real screenshot, as proof
-    top, bottom = max(y + 20, 1000), 1550
-    shot = fit(Image.open(ROOT / "img/msg" / (m["img"] + ".jpg")).convert("RGB"), 860, bottom - top - 60)
-    pad = 22; cw, ch = shot.width + pad * 2, shot.height + pad * 2
-    cx, cy = (W - cw) // 2, top + (bottom - top - ch) // 2
-    d.rounded_rectangle([cx, cy, cx + cw, cy + ch], 24, fill=WHITE, outline=LINE, width=3)
-    rounded_paste(im, shot, cx + pad, cy + pad, 12)
+    d.text((W // 2, y + 12), m["name"] or "Direct message", font=medium(36), fill=GREY, anchor="ma")
+    y += NAME + GAP2
+    cx = (W - cw) // 2
+    d.rounded_rectangle([cx, y, cx + cw, y + ch], 24, fill=WHITE, outline=LINE, width=3)
+    rounded_paste(im, shot, cx + pad, y + pad, 12)
     save(im)
 
 # 3) no call-to-action slide: these are results only (Miko, 2026-11-16)
@@ -94,6 +97,8 @@ for m in data["messages"]:
 # 4) highlight cover (IG shows only the middle circle)
 im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
 d.ellipse([W // 2 - 330, H // 2 - 330, W // 2 + 330, H // 2 + 330], fill=WHITE, outline=BLACK, width=10)
-d.text((W // 2, H // 2), "RESULTS", font=heavy(120), fill=BLACK, anchor="mm")
+size = 120
+while heavy(size).getlength("TESTIMONIALS") > 560: size -= 2   # fit inside the circle
+d.text((W // 2, H // 2), "TESTIMONIALS", font=heavy(size), fill=BLACK, anchor="mm")
 im.save(OUT / "00-cover.png", optimize=True)
 print("made", n, "slides + cover in", OUT)
