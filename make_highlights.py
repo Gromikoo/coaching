@@ -38,8 +38,12 @@ def pill(d, cx, cy, text, f, bg, fg, padx=34, h=None):
     d.rounded_rectangle([cx - tw / 2 - padx, cy - h / 2, cx + tw / 2 + padx, cy + h / 2], 14, fill=bg)
     d.text((cx, cy), text, font=f, fill=fg, anchor="mm")
 
+HEADLINE = "I help women business owners lose their first 20lbs in 6 weeks"
 def header(d, color):
-    d.text((W // 2, 250), "IS HE GOOD?", font=heavy(100), fill=color, anchor="mm")
+    # top line on every slide; starts below IG's progress bar + profile row
+    f = heavy(62); y = 190
+    for ln in wrap(HEADLINE.upper(), f, 940):
+        d.text((W // 2, y), ln, font=f, fill=color, anchor="ma"); y += 74
 
 def button(d, bg, fg, text="SEE IF YOU'RE A FIT · LINK IN BIO"):
     bw, bh, y = 900, 124, 1600
@@ -57,8 +61,8 @@ def save(im):
 for p in data["photos"]:
     im = Image.new("RGB", (W, H), BLACK); d = ImageDraw.Draw(im)
     header(d, WHITE)
-    photo = fit(Image.open(ROOT / p["img"]).convert("RGB"), 940, 900)
-    x, y = (W - photo.width) // 2, 360
+    photo = fit(Image.open(ROOT / p["img"]).convert("RGB"), 940, 820)
+    x, y = (W - photo.width) // 2, 440
     rounded_paste(im, photo, x, y, 20)
     pill(d, W // 2, y + photo.height, label(p["tag"]), heavy(64), WHITE, BLACK)
     f = demi(50); lines = wrap("“" + p["quote"] + "”", f, 920)
@@ -71,17 +75,17 @@ for p in data["photos"]:
 for m in data["messages"]:
     im = Image.new("RGB", (W, H), WHITE); d = ImageDraw.Draw(im)
     header(d, BLACK)
-    pill(d, W // 2, 420, label(m["tag"]), heavy(84), BLACK, WHITE, h=140)
+    pill(d, W // 2, 520, label(m["tag"]), heavy(80), BLACK, WHITE, h=132)
     text = EMOJI.sub("", m["text"]).strip()
     for size in (64, 58, 52, 46, 42, 38):
         f = demi(size); lines = wrap("“" + text + "”", f, 930)
-        if len(lines) * size * 1.3 <= 560: break
-    lh = int(size * 1.3); y = 560
+        if len(lines) * size * 1.3 <= 500: break
+    lh = int(size * 1.3); y = 650
     for ln in lines:
         d.text((W // 2, y), ln, font=f, fill=BLACK, anchor="ma"); y += lh
     d.text((W // 2, y + 18), m["name"] or "Direct message", font=medium(36), fill=GREY, anchor="ma"); y += 80
     # the real screenshot, as proof
-    top, bottom = max(y + 20, 1000), 1550
+    top, bottom = max(y + 20, 1050), 1560
     shot = fit(Image.open(ROOT / "img/msg" / (m["img"] + ".jpg")).convert("RGB"), 860, bottom - top - 60)
     pad = 22; cw, ch = shot.width + pad * 2, shot.height + pad * 2
     cx, cy = (W - cw) // 2, top + (bottom - top - ch) // 2
